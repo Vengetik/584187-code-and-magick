@@ -4,34 +4,31 @@ var CLOUD_Y = 60;
 var CLOUD_WIDTH = 420;
 var CLOUD_HEIGHT = 190;
 var GAP = 40;
+var BAR_X = 200; // отступ по X
+var BAR_WIDTH = 40; // ширина столбца
+var barHeight = CLOUD_HEIGHT - GAP; // максимальная высота стобца
+var TEXT_GAP = 20; // Текстовый отступ
 
-window.renderStatistics = function (ctx, players, times) {
-  // bezier and common line
-  var line = function (x, y) {
-    ctx.lineTo(x, y);
-  };
-  var bezier = function (cp1x, cp1y, cp2x, cp2y, x, y) {
-    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
-  };
-  // CLOUD
+// CLOUD
+var renderCloud = function (ctx) {
   ctx.fillRect(CLOUD_X, CLOUD_Y, CLOUD_WIDTH, CLOUD_HEIGHT);
   ctx.beginPath();
   ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
   ctx.shadowOffsetY = 10;
   ctx.shadowOffsetX = 10;
   ctx.fillStyle = 'white';
-  bezier(540, 270, 350, 220, 160, 270);
-  line(161, 290);
-  bezier(160, 290, 140, 300, 120, 290);
-  bezier(120, 290, 150, 140, 120, 20);
-  bezier(120, 10, 140, 0, 160, 10);
-  line(161, 40);
-  bezier(160, 40, 350, 80, 540, 43);
-  line(539, 20);
-  bezier(540, 20, 560, 10, 580, 20);
-  bezier(580, 30, 550, 180, 580, 275);
-  bezier(580, 280, 560, 300, 540, 285);
-  line(538, 240);
+  ctx.bezierCurveTo(540, 270, 350, 220, 160, 270);
+  ctx.lineTo(161, 290);
+  ctx.bezierCurveTo(160, 290, 140, 300, 120, 290);
+  ctx.bezierCurveTo(120, 290, 150, 140, 120, 20);
+  ctx.bezierCurveTo(120, 10, 140, 0, 160, 10);
+  ctx.lineTo(161, 40);
+  ctx.bezierCurveTo(160, 40, 350, 80, 540, 43);
+  ctx.lineTo(539, 20);
+  ctx.bezierCurveTo(540, 20, 560, 10, 580, 20);
+  ctx.bezierCurveTo(580, 30, 550, 180, 580, 275);
+  ctx.bezierCurveTo(580, 280, 560, 300, 540, 285);
+  ctx.lineTo(538, 240);
   ctx.fill();
   ctx.closePath();
   // clear shadow
@@ -42,13 +39,15 @@ window.renderStatistics = function (ctx, players, times) {
   ctx.font = '16px PT Mono';
   ctx.fillText('Ура, вы победили!', 260, 30);
   ctx.fillText('Список результатов:', 260, 50);
-  // BAR CHART
-  // get maximum height column
+};
+// get random number between min and max
+var getRandom = function getRandom(min, max) {
+  return Math.random() * (max - min) + min;
+};
+window.renderStatistics = function (ctx, players, times) {
+  renderCloud(ctx);
   var maxHeight = Math.max.apply(null, times);
-  // get random number between min and max
-  var getRandom = function getRandom(min, max) {
-    return Math.random() * (max - min) + min;
-  };
+  // Отрисовка гистограммы
   /*  determines the color depending on name */
   var getColor = function () {
     if (players[i] === 'Вы') {
@@ -57,26 +56,22 @@ window.renderStatistics = function (ctx, players, times) {
       ctx.fillStyle = 'rgba(0, 9, 255, ' + getRandom(0.1, 1) + ')';
     }
   };
-
-  // Отрисовка гистограммы
   var renderText = function () {
     ctx.fillText(players[i], BAR_X + (GAP + BAR_WIDTH) * i, CLOUD_Y + 10 + barHeight + TEXT_GAP);
     ctx.fillText(Math.ceil(times[i]), BAR_X + (GAP + BAR_WIDTH) * i, CLOUD_Y + 10 + (barHeight - currentHeight));
   };
   var renderColumn = function () {
     ctx.fillRect(BAR_X + (BAR_WIDTH + GAP) * i, CLOUD_Y + 10 + (barHeight - currentHeight), BAR_WIDTH, currentHeight);
+    renderText();
   };
-  var BAR_X = 200; // отступ по X
-  var BAR_WIDTH = 40; // ширина столбца
-  var barHeight = CLOUD_HEIGHT - GAP; // максимальная высота стобца
-  var TEXT_GAP = 20; // Текстовый отступ
+  // get maximum height column
   for (var i = 0; i < players.length; i++) {
     // Цвет
     ctx.fillStyle = getColor();
     // Стобцы и текст
     var currentHeight = barHeight * times[i] / maxHeight;
-    renderText();
     renderColumn();
   }
+
 };
 
