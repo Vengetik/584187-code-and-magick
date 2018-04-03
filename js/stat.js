@@ -49,17 +49,19 @@ window.renderStatistics = function (ctx, players, times) {
   var getRandom = function getRandom(min, max) {
     return Math.random() * (max - min) + min;
   };
-  var BAR_X = 200;
-  var BAR_WIDTH = 40;
-  var barHeight = CLOUD_HEIGHT - GAP;
-  var histogramHeight = 150;
-  var TEXT_GAP = 20;
+  // Отрисовка гистограммы
+  var BAR_X = 200; // отступ по X
+  var BAR_WIDTH = 40; // ширина столбца
+  var barHeight = CLOUD_HEIGHT - GAP; // максимальная высота стобца
+  var TEXT_GAP = 20;  // Текстовый отступ
   for (var i = 0; i < players.length; i++) {
+    // Цвет
     if (players[i] === 'Вы') {
       ctx.fillStyle = 'rgba(255, 0, 0, 1)';
     } else {
       ctx.fillStyle = 'rgba(0, 9, 255, ' + getRandom(0.1, 1) + ')';
     }
+    // Стобцы и текст
     ctx.fillText(players[i], BAR_X + (GAP + BAR_WIDTH) * i, CLOUD_Y + 10 + barHeight + TEXT_GAP);
     ctx.fillRect(BAR_X + (BAR_WIDTH + GAP) * i, CLOUD_Y + 10, BAR_WIDTH, (barHeight * times[i]) / maxHeight);
   }
